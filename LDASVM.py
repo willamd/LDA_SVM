@@ -78,7 +78,7 @@ print("Extracting tf-idf features for LDA...")
 max_features=2000
 n_topics=275
 max_iter=60
-kernel='rbf'
+kernel='linear'
 save_partName=kernel+'_'+str(max_features)+'_'+str(n_topics)+'_'+str(max_iter)
 
 tfidf_vectorizer=TfidfVectorizer(sublinear_tf=True,stop_words='english',max_features=max_features)
@@ -94,8 +94,10 @@ lda = LatentDirichletAllocation(n_topics=n_topics,
 
 X_train=lda.fit_transform(X_train)
 
-#
-# joblib.dump(lda, 'lda275_e.model')
+# #
+# lda=joblib.load('./data/linear/lda_linear_2000_275_60.model')
+# X_train=lda.fit_transform(X_train)
+
 # print(X_train[0])
 # 打印最佳模型
 joblib.dump(lda, 'lda_'+save_partName+'.model')
@@ -108,7 +110,7 @@ X_test=lda.transform(X_test)
 
 # train_target=y_train
 # test_target=y_test
-max_iter=range(1,1000,10)
+max_iter=range(10,200,10)
 F1_score=[]
 train_errors1 = list()
 test_errors1 = list()
@@ -174,6 +176,7 @@ for idx, iter in enumerate(max_iter):
     print("Test top1 acc:%f,train top1 acc:%f"%(accuracy_score(Y_test, test_pre_top1),accuracy_score(Y_train, train_top1)))
     print("Epoch:%d,F1_score:%f"%(iter,float(f1_s)))
     F1_score.append((iter,f1_s))
+
 
 joblib.dump(F1_score, 'F1_score'+save_partName+'.dat')
 joblib.dump(train_errors1, 'train_errors1'+save_partName+'.dat')
